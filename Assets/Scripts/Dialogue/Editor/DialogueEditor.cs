@@ -1,11 +1,17 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
+using System;
 
 namespace RPG.Dialogue.Editor
 {
     public class DialogueEditor : EditorWindow
     {
+        Dialogue selectedDialogue = null;
+        GUIStyle nodeStyle;
+        DialogueNode draggingNode = null;
+        Vector2 draggingOffset;
+
         [MenuItem("Window/Dialogue Editor")]
         public static void ShowEditorWindow()
         {
@@ -23,6 +29,96 @@ namespace RPG.Dialogue.Editor
             }
 
             return false;
+        }
+
+       private void OnEnable() 
+        {
+            Selection.selectionChanged += OnSelectionChange;
+            nodeStyle = new GUIStyle();
+            nodeStyle.normal.background = EditorGUIUtility.Load("node0") as Texture2D;
+            nodeStyle.padding = new RectOffset(20, 20, 20, 20);
+            nodeStyle.border = new RectOffset(12, 12, 12, 12);
+        }
+
+       private void OnSelectionChange()
+       {
+           Dialogue newDialogue = Selection.activeObject as Dialogue;
+           if(newDialogue)
+           {
+               selectedDialogue = newDialogue;
+               Repaint();
+           }
+       }
+
+        private void OnGUI() 
+        {
+            if(selectedDialogue == null)
+            {
+                EditorGUILayout.LabelField("No Dialogue Selected");
+            }
+            else
+            {                
+                ProcessEvents();
+                foreach(DialogueNode node in selectedDialogue.GetAllNodes())
+                {
+                    OnGUINode(node);
+                }
+            }
+        }
+
+        private void ProcessEvents()
+        {
+            if(Event.current.type == EventType.MouseDown && draggingNode == null)
+            {
+                draggingNode = GetNodeAtPoint(Event.current.mousePosition);
+                if(draggingNode != null)
+                {
+                    draggingOffset = draggingNode.rect.position - Event.current.mousePosition;
+                }
+            }
+            else if(Event.current.type == EventType.MouseDrag && draggingNode != null)
+            {                
+                Undo.RecordObject(selectedDialogue, "Move dialogue node");
+                draggingNode.rect.position = Event.current.mousePosition + draggingOffset;
+                GUI.changed = true;
+            }
+            else if(Event.current.type == EventType.MouseUp && draggingNode != null)
+            {
+                draggingNode = null;
+            }            
+        }
+
+        private void OnGUINode(DialogueNode node)
+        {
+            GUILayout.BeginArea(new Rect(node.rect), nodeStyle);
+            EditorGUI.BeginChangeCheck();
+
+            EditorGUILayout.LabelField("Node: ");
+
+            string newText = EditorGUILayout.TextField(node.text);
+            string NewUniqueID = EditorGUILayout.TextField(node.uniqueID);
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(selectedDialogue, "Update Dialogue Text");
+                node.text = newText;
+                node.uniqueID = NewUniqueID;
+            }
+
+            GUILayout.EndArea();
+        }
+
+        private DialogueNode GetNodeAtPoint(Vector2 point)
+        {
+            DialogueNode foundNode = null;
+            foreach(DialogueNode node in selectedDialogue.GetAllNodes())
+            {
+                if(node.rect.Contains(point))
+                {
+                    foundNode = node;
+                }
+            }
+            return foundNode;
         }
     }
 }

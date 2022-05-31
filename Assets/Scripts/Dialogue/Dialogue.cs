@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace RPG.Dialogue
 {
@@ -6,6 +7,24 @@ namespace RPG.Dialogue
     public class Dialogue : ScriptableObject
     {
         [SerializeField]
-        DialogueNode[] nodes;
+        List<DialogueNode> nodes = new List<DialogueNode>();
+
+#if UNITY_EDITOR
+        private void Awake() {
+            if(nodes.Count == 0)
+            {
+                nodes.Add(new DialogueNode());
+            }            
+        }
+#endif
+        public IEnumerable<DialogueNode> GetAllNodes()
+        {
+            return nodes;
+        }
+
+        public DialogueNode GetRootNode()
+        {
+            return nodes[0];
+        }
     }
 }
