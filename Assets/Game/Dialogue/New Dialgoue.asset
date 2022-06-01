@@ -13,12 +13,22 @@ MonoBehaviour:
   m_Name: New Dialgoue
   m_EditorClassIdentifier: 
   nodes:
-  - uniqueID: 4da2d151-bfc7-41be-a98a-868345330d82
+  - uniqueID: cef9102e-77b8-4499-bb39-b3019a80ad0f
+    text: 
+    children:
+    - 48ff2de1-acdc-46de-9971-a9212d296e64
+    rect:
+      serializedVersion: 2
+      x: 241
+      y: 198
+      width: 200
+      height: 100
+  - uniqueID: 48ff2de1-acdc-46de-9971-a9212d296e64
     text: 
     children: []
     rect:
       serializedVersion: 2
-      x: 0
-      y: 0
+      x: 519
+      y: 123
       width: 200
       height: 100

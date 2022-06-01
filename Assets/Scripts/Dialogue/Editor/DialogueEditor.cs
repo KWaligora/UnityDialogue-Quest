@@ -16,6 +16,8 @@ namespace RPG.Dialogue.Editor
         Vector2 draggingOffset;
         [NonSerialized]
         DialogueNode creatingNode = null; //not null if need to create new node
+        [NonSerialized]
+        DialogueNode nodeToDelete = null;
 
         [MenuItem("Window/Dialogue Editor")]
         public static void ShowEditorWindow()
@@ -77,7 +79,13 @@ namespace RPG.Dialogue.Editor
                     Undo.RecordObject(selectedDialogue, "Added Dialogue node");
                     selectedDialogue.CreateNode(creatingNode);
                     creatingNode = null;
-                }                
+                }
+                if(nodeToDelete != null)
+                {
+                    Undo.RecordObject(selectedDialogue, "Remove node");
+                    selectedDialogue.DeleteNode(nodeToDelete);
+                    nodeToDelete = null;                    
+                }     
             }
         }
 
@@ -124,8 +132,6 @@ namespace RPG.Dialogue.Editor
             GUILayout.BeginArea(new Rect(node.rect), nodeStyle);
             EditorGUI.BeginChangeCheck();
 
-            EditorGUILayout.LabelField("Node: ");
-
             string newText = EditorGUILayout.TextField(node.text);
 
             if (EditorGUI.EndChangeCheck())
@@ -133,11 +139,17 @@ namespace RPG.Dialogue.Editor
                 Undo.RecordObject(selectedDialogue, "Update Dialogue Text");
                 node.text = newText;
             }
-
+            GUILayout.BeginHorizontal();
             if(GUILayout.Button("+"))
             {
                 creatingNode = node;
             }
+
+            if (GUILayout.Button("x"))
+            {
+                nodeToDelete = node;
+            }
+            GUILayout.EndHorizontal();
 
             foreach(DialogueNode childNode in selectedDialogue.GetAllChildern(node))
             {
