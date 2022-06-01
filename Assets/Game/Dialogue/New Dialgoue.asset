@@ -13,20 +13,12 @@ MonoBehaviour:
   m_Name: New Dialgoue
   m_EditorClassIdentifier: 
   nodes:
-  - uniqueID: a
-    text: Hello
-    children:
-    - b
-    - c
-  - uniqueID: b
-    text: Hello, your self
-    children: []
-  - uniqueID: c
-    text: Go away!
-    children: []
-  - uniqueID: 
+  - uniqueID: 4da2d151-bfc7-41be-a98a-868345330d82
     text: 
     children: []
-  - uniqueID: 
-    text: 
-    children: []
+    rect:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 200
+      height: 100
